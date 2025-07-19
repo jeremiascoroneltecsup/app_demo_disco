@@ -53,19 +53,16 @@ class LoginResponse {
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     if (json['success'] == true && json['data'] != null) {
-      final data = json['data'];
+      final data = json['data'] as Map<String, dynamic>;
       return LoginResponse(
         success: true,
         token: data['token'],
         user: User.fromJson(data),
-        error: null,
       );
     } else {
       return LoginResponse(
-        success: json['success'] ?? false,
-        token: null,
-        user: null,
-        error: json['message'] ?? json['error'] ?? 'Error desconocido',
+        success: false,
+        error: json['message'] ?? 'Error de autenticación',
       );
     }
   }

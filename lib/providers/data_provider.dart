@@ -37,7 +37,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   // Get products with stock
-  List<Product> get availableProducts => _products.where((product) => product.stock > 0).toList();
+  List<Product> get availableProducts => _products.where((product) => (product.stock ?? 0) > 0).toList();
 
   // Get active promotions
   List<Promotion> get activePromotions => _promotions.where((promotion) => promotion.enabled).toList();

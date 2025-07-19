@@ -44,7 +44,7 @@ class SaleProvider extends ChangeNotifier {
 
   // Cart operations
   void addProductToCart(Product product, {int quantity = 1}) {
-    if (product.stock >= quantity) {
+    if ((product.stock ?? 0) >= quantity) {
       _cart.addProduct(product, quantity: quantity);
       notifyListeners();
     }
@@ -58,7 +58,7 @@ class SaleProvider extends ChangeNotifier {
   void updateCartItemQuantity(CartItem item, int quantity) {
     // Verificar stock para productos
     if (item.type == CartItemType.product && item.product != null) {
-      if (quantity > item.product!.stock) {
+      if (quantity > (item.product!.stock ?? 0)) {
         return; // No permitir más que el stock disponible
       }
     }

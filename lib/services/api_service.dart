@@ -12,6 +12,11 @@ import '../models/category.dart';
 import '../utils/api_config.dart';
 
 class ApiService {
+  // Singleton pattern
+  static final ApiService _instance = ApiService._internal();
+  factory ApiService() => _instance;
+  ApiService._internal();
+
   String? _token;
 
   void setToken(String token) {
@@ -193,7 +198,14 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
           final List<dynamic> promotionsJson = data['data'];
-          return promotionsJson.map((json) => Promotion.fromJson(json)).toList();
+          return promotionsJson.map((json) {
+            try {
+              return Promotion.fromJson(json);
+            } catch (e) {
+              print('Warning: Error parsing promotion, skipping: $e');
+              return null;
+            }
+          }).where((promotion) => promotion != null).cast<Promotion>().toList();
         }
       }
       return [];

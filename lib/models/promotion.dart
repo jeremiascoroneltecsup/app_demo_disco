@@ -21,10 +21,10 @@ class PromotionDetail {
 
   factory PromotionDetail.fromJson(Map<String, dynamic> json) {
     return PromotionDetail(
-      id: json['id'],
-      promotionId: json['promotionId'],
-      productId: json['productId'],
-      quantity: json['quantity'],
+      id: json['id'] ?? 0,
+      promotionId: json['promotionId'] ?? 0,
+      productId: json['productId'] ?? 0,
+      quantity: json['quantity'] ?? 0,
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt']) 
           : null,
@@ -64,11 +64,11 @@ class Promotion {
         .toList();
 
     return Promotion(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
       price: (json['price'] is String) 
-          ? double.parse(json['price']) 
-          : json['price'].toDouble(),
+          ? double.tryParse(json['price']) ?? 0.0
+          : (json['price'] ?? 0.0).toDouble(),
       enabled: json['enabled'] ?? true,
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt']) 

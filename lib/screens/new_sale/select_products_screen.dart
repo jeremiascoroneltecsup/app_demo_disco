@@ -473,7 +473,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
                     ),
                     const SizedBox(height: AppConstants.spacingXS),
                     Text(
-                      _getCategoryName(product.categoryId, categories),
+                      _getCategoryName(product.categoryId ?? 0, categories),
                       style: AppConstants.bodyMedium.copyWith(
                         color: AppConstants.primaryColor.withOpacity(0.7),
                       ),
@@ -493,9 +493,9 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Stock: ${product.stock}',
+                    'Stock: ${product.stock ?? 0}',
                     style: AppConstants.bodyMedium.copyWith(
-                      color: product.stock <= 10
+                      color: (product.stock ?? 0) <= 10
                           ? AppConstants.warningColor
                           : AppConstants.successColor,
                       fontWeight: FontWeight.w600,

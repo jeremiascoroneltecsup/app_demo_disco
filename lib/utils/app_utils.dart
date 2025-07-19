@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flut  // Formatear fecha
+  static String formatDate(DateTime dateTime) {
+    final formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(dateTime);
+  }aterial.dart';
 import 'package:intl/intl.dart';
 
 class AppUtils {
@@ -14,7 +18,7 @@ class AppUtils {
 
   // Formatear fecha y hora
   static String formatDateTime(DateTime dateTime) {
-    final formatter = DateFormat('dd/MM/yyyy HH:mm', 'es_PE');
+    final formatter = DateFormat('dd/MM/yyyy HH:mm');
     return formatter.format(dateTime);
   }
 

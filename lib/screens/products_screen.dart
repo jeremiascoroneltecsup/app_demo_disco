@@ -215,8 +215,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Widget _buildProductCard(Product product, List<Category> categories) {
-    final isLowStock = product.stock <= 10;
-    final isOutOfStock = product.stock <= 0;
+    final stock = product.stock ?? 0;
+    final isLowStock = stock <= 10;
+    final isOutOfStock = stock <= 0;
 
     return AppCard(
       padding: const EdgeInsets.all(AppConstants.spacingM),
@@ -237,7 +238,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     ),
                     const SizedBox(height: AppConstants.spacingXS),
                     Text(
-                      _getCategoryName(product.categoryId, categories),
+                      _getCategoryName(product.categoryId ?? 0, categories),
                       style: AppConstants.bodyMedium.copyWith(
                         color: AppConstants.primaryColor.withOpacity(0.7),
                       ),
