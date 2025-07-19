@@ -69,6 +69,11 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
   List<Promotion> _getFilteredPromotions(DataProvider dataProvider) {
     var promotions = dataProvider.activePromotions;
 
+    // Filter out promotions with out of stock products
+    promotions = promotions.where((promotion) {
+      return !_hasOutOfStockProducts(promotion, dataProvider.products);
+    }).toList();
+
     // Filter by search query
     if (_searchQuery.isNotEmpty) {
       promotions = promotions
@@ -77,6 +82,22 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
     }
 
     return promotions;
+  }
+
+  // Función para verificar si una promoción tiene productos sin stock
+  bool _hasOutOfStockProducts(Promotion promotion, List<Product> products) {
+    for (final detail in promotion.promotionDetails) {
+      try {
+        final product = products.firstWhere((p) => p.id == detail.productId);
+        if ((product.stock ?? 0) == 0) {
+          return true;
+        }
+      } catch (e) {
+        // Si no se encuentra el producto, considerarlo como sin stock
+        return true;
+      }
+    }
+    return false;
   }
 
   String _getCategoryName(int categoryId, List<models.Category> categories) {
