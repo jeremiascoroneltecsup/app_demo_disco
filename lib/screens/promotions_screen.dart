@@ -54,9 +54,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Promociones'),
-      ),
+      appBar: AppBar(title: const Text('Promociones')),
       body: Consumer<DataProvider>(
         builder: (context, dataProvider, child) {
           if (dataProvider.isLoading) {
@@ -67,29 +65,44 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
             return const EmptyStateWidget(
               icon: Icons.local_offer,
               title: 'No hay promociones',
-              subtitle: 'Las promociones aparecerán aquí cuando estén disponibles',
+              subtitle:
+                  'Las promociones aparecerán aquí cuando estén disponibles',
             );
           }
 
-          return Padding(
-            padding: const EdgeInsets.all(AppConstants.spacingM),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: AppConstants.spacingM,
-                mainAxisSpacing: AppConstants.spacingM,
-              ),
-              itemCount: dataProvider.promotions.length,
-              itemBuilder: (context, index) {
-                final promotion = dataProvider.promotions[index];
-                final hasOutOfStock = _hasOutOfStockProducts(
-                  promotion,
-                  dataProvider.products,
-                );
-                return _buildPromotionCard(promotion, hasOutOfStock);
-              },
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = 1;
+              if (constraints.maxWidth >= 1200) {
+                crossAxisCount = 4;
+              } else if (constraints.maxWidth >= 900) {
+                crossAxisCount = 3;
+              } else if (constraints.maxWidth >= 600) {
+                crossAxisCount = 2;
+              }
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 1200),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: 1.2, // Más cuadrado y compacto
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: dataProvider.promotions.length,
+                    itemBuilder: (context, index) {
+                      final promotion = dataProvider.promotions[index];
+                      final hasOutOfStock = _hasOutOfStockProducts(
+                        promotion,
+                        dataProvider.products,
+                      );
+                      return _buildPromotionCard(promotion, hasOutOfStock);
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -113,48 +126,46 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                       promotion.name,
                       style: AppConstants.titleMedium.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 15, // Más pequeño
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppConstants.spacingXS),
+                    const SizedBox(height: 2),
                     Text(
                       AppUtils.formatCurrency(promotion.price),
                       style: AppConstants.titleLarge.copyWith(
                         color: AppConstants.primaryColor,
                         fontWeight: FontWeight.bold,
+                        fontSize: 18, // Más pequeño
                       ),
                     ),
                   ],
                 ),
               ),
-              // Stock warning indicator
               if (hasOutOfStock) ...[
-                const SizedBox(width: AppConstants.spacingS),
+                const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.spacingS,
-                    vertical: AppConstants.spacingXS,
+                    horizontal: 6,
+                    vertical: 2,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.red.shade100,
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.red.shade300),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.warning,
-                        color: Colors.red.shade700,
-                        size: 16,
-                      ),
-                      const SizedBox(width: AppConstants.spacingXS),
+                      Icon(Icons.warning, color: Colors.red.shade700, size: 13),
+                      const SizedBox(width: 2),
                       Text(
                         'Sin stock',
                         style: AppConstants.bodyMedium.copyWith(
                           color: Colors.red.shade700,
                           fontWeight: FontWeight.bold,
+                          fontSize: 11,
                         ),
                       ),
                     ],
@@ -163,38 +174,36 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
               ],
             ],
           ),
-          
-          const SizedBox(height: AppConstants.spacingM),
-          
-          // Stats row
+          const SizedBox(height: 6),
           Row(
             children: [
-              // Products count
               Container(
-                padding: const EdgeInsets.all(AppConstants.spacingS),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppConstants.secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+                  color: AppConstants.secondaryColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       Icons.inventory_2,
                       color: AppConstants.secondaryColor,
-                      size: 20,
+                      size: 15,
                     ),
-                    const SizedBox(height: AppConstants.spacingXS),
+                    const SizedBox(height: 2),
                     Text(
                       '${promotion.totalProducts}',
                       style: AppConstants.labelLarge.copyWith(
                         color: AppConstants.secondaryColor,
                         fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
                     Text(
                       'productos',
                       style: AppConstants.bodyMedium.copyWith(
                         color: AppConstants.secondaryColor,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -202,19 +211,16 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
               ),
             ],
           ),
-          
-          const SizedBox(height: AppConstants.spacingM),
-          
-          // Products preview
+          const SizedBox(height: 6),
           if (promotion.promotionDetails.isNotEmpty) ...[
             Text(
-              'Productos incluidos:',
-              style: AppConstants.labelLarge,
+              'Incluye:',
+              style: AppConstants.labelLarge.copyWith(fontSize: 13),
             ),
-            const SizedBox(height: AppConstants.spacingS),
+            const SizedBox(height: 4),
             ...promotion.promotionDetails.take(2).map((detail) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: AppConstants.spacingXS),
+                padding: const EdgeInsets.only(bottom: 2),
                 child: Row(
                   children: [
                     Container(
@@ -225,11 +231,11 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(width: AppConstants.spacingS),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         '${detail.quantity}x ${detail.product?.name ?? 'Producto'}',
-                        style: AppConstants.bodyMedium,
+                        style: AppConstants.bodyMedium.copyWith(fontSize: 13),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -244,22 +250,26 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                 style: AppConstants.bodyMedium.copyWith(
                   color: AppConstants.primaryColor.withOpacity(0.7),
                   fontStyle: FontStyle.italic,
+                  fontSize: 12,
                 ),
               ),
             ],
           ],
-          
-          const Spacer(),
-          
-          // View details button
-          SizedBox(
-            width: double.infinity,
-            child: TextButton.icon(
-              onPressed: () => _showPromotionDetails(promotion),
-              icon: const Icon(Icons.visibility, size: 16),
-              label: const Text('Ver detalles', style: TextStyle(fontSize: 12)),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: AppConstants.spacingS),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                onPressed: () => _showPromotionDetails(promotion),
+                icon: const Icon(Icons.visibility, size: 14),
+                label: const Text(
+                  'Ver detalles',
+                  style: TextStyle(fontSize: 11),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  minimumSize: Size(0, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
               ),
             ),
           ),
@@ -325,7 +335,7 @@ class _PromotionDetailsDialog extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Content
             Flexible(
               child: Padding(
@@ -338,7 +348,7 @@ class _PromotionDetailsDialog extends StatelessWidget {
                       style: AppConstants.titleMedium,
                     ),
                     const SizedBox(height: AppConstants.spacingM),
-                    
+
                     Flexible(
                       child: ListView.builder(
                         shrinkWrap: true,
@@ -346,22 +356,35 @@ class _PromotionDetailsDialog extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final detail = promotion.promotionDetails[index];
                           return Container(
-                            margin: const EdgeInsets.only(bottom: AppConstants.spacingS),
-                            padding: const EdgeInsets.all(AppConstants.spacingM),
+                            margin: const EdgeInsets.only(
+                              bottom: AppConstants.spacingS,
+                            ),
+                            padding: const EdgeInsets.all(
+                              AppConstants.spacingM,
+                            ),
                             decoration: BoxDecoration(
                               color: AppConstants.backgroundColor,
-                              borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+                              borderRadius: BorderRadius.circular(
+                                AppConstants.borderRadiusS,
+                              ),
                               border: Border.all(
-                                color: AppConstants.primaryColor.withOpacity(0.1),
+                                color: AppConstants.primaryColor.withOpacity(
+                                  0.1,
+                                ),
                               ),
                             ),
                             child: Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(AppConstants.spacingS),
+                                  padding: const EdgeInsets.all(
+                                    AppConstants.spacingS,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppConstants.secondaryColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+                                    color: AppConstants.secondaryColor
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(
+                                      AppConstants.borderRadiusS,
+                                    ),
                                   ),
                                   child: Text(
                                     '${detail.quantity}x',
@@ -373,19 +396,25 @@ class _PromotionDetailsDialog extends StatelessWidget {
                                 const SizedBox(width: AppConstants.spacingM),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        detail.product?.name ?? 'Producto no disponible',
+                                        detail.product?.name ??
+                                            'Producto no disponible',
                                         style: AppConstants.bodyLarge,
                                       ),
                                       if (detail.product != null) ...[
-                                        const SizedBox(height: AppConstants.spacingXS),
+                                        const SizedBox(
+                                          height: AppConstants.spacingXS,
+                                        ),
                                         Text(
                                           'Precio unitario: ${AppUtils.formatCurrency(detail.product!.price)}',
-                                          style: AppConstants.bodyMedium.copyWith(
-                                            color: AppConstants.primaryColor.withOpacity(0.7),
-                                          ),
+                                          style: AppConstants.bodyMedium
+                                              .copyWith(
+                                                color: AppConstants.primaryColor
+                                                    .withOpacity(0.7),
+                                              ),
                                         ),
                                       ],
                                     ],
