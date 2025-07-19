@@ -29,6 +29,17 @@ class AppConstants {
   static const Color successColor = Color(0xFFA3BE8C);
   static const Color warningColor = Color(0xFFEBCB8B);
   
+  // Lista de colores para categorías
+  static const List<Color> categoryColors = [
+    Color(0xFF5E81AC),  // Azul
+    Color(0xFF81A1C1),  // Azul claro
+    Color(0xFFD08770),  // Naranja
+    Color(0xFFBF616A),  // Rojo
+    Color(0xFFA3BE8C),  // Verde
+    Color(0xFFEBCB8B),  // Amarillo
+    Color(0xFFB48EAD),  // Morado
+  ];
+  
   // Text Styles
   static const TextStyle titleLarge = TextStyle(
     fontSize: 24,
@@ -96,7 +107,7 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppConstants.surfaceColor,
         elevation: 2,
         shape: RoundedRectangleBorder(

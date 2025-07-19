@@ -433,12 +433,13 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
                   actionText: 'Limpiar filtros',
                 )
               : GridView.builder(
-                  padding: const EdgeInsets.all(AppConstants.spacingM),
+                  padding: const EdgeInsets.all(8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: AppConstants.spacingM,
-                    mainAxisSpacing: AppConstants.spacingM,
-                    childAspectRatio: 0.8,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 1.5, // Proporción más ancha que alta
+                    mainAxisExtent: 90, // Altura fija para cada tarjeta
                   ),
                   itemCount: filteredProducts.length,
                   itemBuilder: (context, index) {
@@ -484,64 +485,80 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
   Widget _buildProductCard(Product product, List<models.Category> categories) {
     return Consumer<SaleProvider>(
       builder: (context, saleProvider, child) {
-        return AppCard(
-          onTap: () {
-            saleProvider.addProductToCart(product);
-            AppUtils.showSuccessSnackBar(
-              context,
-              '${product.name} agregado al carrito',
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      style: AppConstants.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppConstants.spacingXS),
-                    Text(
-                      _getCategoryName(product.categoryId ?? 0, categories),
-                      style: AppConstants.bodyMedium.copyWith(
-                        color: AppConstants.primaryColor.withOpacity(0.7),
-                      ),
-                    ),
-                    const SizedBox(height: AppConstants.spacingS),
-                    Text(
-                      AppUtils.formatCurrency(product.price),
-                      style: AppConstants.titleMedium.copyWith(
-                        color: AppConstants.successColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
+        return Card(
+          margin: const EdgeInsets.all(2),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+          ),
+          child: InkWell(
+            onTap: () {
+              saleProvider.addProductToCart(product);
+              AppUtils.showSuccessSnackBar(
+                context,
+                '${product.name} agregado al carrito',
+              );
+            },
+            borderRadius: BorderRadius.circular(AppConstants.borderRadiusS),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Stock: ${product.stock ?? 0}',
-                    style: AppConstants.bodyMedium.copyWith(
-                      color: (product.stock ?? 0) <= 10
-                          ? AppConstants.warningColor
-                          : AppConstants.successColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: AppConstants.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        _getCategoryName(product.categoryId ?? 0, categories),
+                        style: AppConstants.bodyMedium.copyWith(
+                          color: AppConstants.primaryColor.withOpacity(0.7),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.add_circle,
-                    color: AppConstants.primaryColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppUtils.formatCurrency(product.price),
+                        style: AppConstants.bodyMedium.copyWith(
+                          color: AppConstants.successColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Stock: ${product.stock ?? 0}',
+                            style: AppConstants.bodyMedium.copyWith(
+                              color: (product.stock ?? 0) <= 10
+                                  ? AppConstants.warningColor
+                                  : AppConstants.successColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.add_circle,
+                            color: AppConstants.primaryColor,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         );
       },
