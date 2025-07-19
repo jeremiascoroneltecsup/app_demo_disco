@@ -22,6 +22,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void _handleLogout() async {
+    final confirmed = await AppUtils.showConfirmDialog(
+      context,
+      title: 'Cerrar Sesión',
+      message: '¿Está seguro que desea cerrar sesión?',
+      confirmText: 'Sí, cerrar sesión',
+      cancelText: 'Cancelar',
+    );
+
+    if (confirmed && mounted) {
+      await context.read<AuthProvider>().logout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, DataProvider>(
@@ -94,6 +108,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            onPressed: _handleLogout,
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
+            color: Colors.red,
           ),
         ],
       ),

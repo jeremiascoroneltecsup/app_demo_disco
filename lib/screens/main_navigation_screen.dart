@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import 'dashboard_screen.dart';
 import 'products_screen.dart';
 import 'sales_screen.dart';
@@ -57,35 +55,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_getScreenTitle()),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'logout') {
-                _handleLogout();
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem<String>(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 8),
-                    Text('Cerrar Sesión'),
-                  ],
-                ),
-              ),
-            ],
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.more_vert),
-            ),
-          ),
-        ],
-      ),
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -117,49 +86,4 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  String _getScreenTitle() {
-    switch (_currentIndex) {
-      case 0:
-        return 'Dashboard';
-      case 1:
-        return 'Productos';
-      case 2:
-        return 'Ventas';
-      case 3:
-        return 'Promociones';
-      case 4:
-        return 'Configuración';
-      default:
-        return 'App Demo Disco';
-    }
-  }
-
-  void _handleLogout() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Cerrar Sesión'),
-          content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<AuthProvider>().logout();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Cerrar Sesión'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
