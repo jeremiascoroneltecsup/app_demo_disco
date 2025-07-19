@@ -174,6 +174,15 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  Future<Promotion?> getPromotionDetails(int promotionId) async {
+    try {
+      return await _apiService.getPromotionDetails(promotionId);
+    } catch (e) {
+      print('Error loading promotion details: $e');
+      return null;
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

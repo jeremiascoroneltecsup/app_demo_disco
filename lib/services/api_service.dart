@@ -282,6 +282,27 @@ class ApiService {
     }
   }
 
+  // Get promotion with full details
+  Future<Promotion?> getPromotionDetails(int promotionId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.promotionsEndpoint}/$promotionId'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true && data['data'] != null) {
+          return Promotion.fromJson(data['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting promotion details: $e');
+      return null;
+    }
+  }
+
   // Get sale with details (products and promotions)
   Future<SaleWithDetails?> getSaleWithDetails(int saleId) async {
     try {

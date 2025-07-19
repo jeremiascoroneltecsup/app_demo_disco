@@ -7,6 +7,7 @@ import '../providers/data_provider.dart';
 import '../utils/constants.dart';
 import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
+import 'promotion_detail_screen.dart';
 
 class SaleDetailScreen extends StatefulWidget {
   final Sale sale;
@@ -259,6 +260,17 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                           textAlign: TextAlign.right,
                         ),
                       ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Acción',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -345,9 +357,53 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
               textAlign: TextAlign.right,
             ),
           ),
+          
+          // Action button (only for promotions)
+          Expanded(
+            flex: 1,
+            child: item.itemType == 'Promoción' 
+                ? Center(
+                    child: IconButton(
+                      onPressed: () => _viewPromotionDetails(item),
+                      icon: const Icon(Icons.info_outline),
+                      iconSize: 20,
+                      color: AppConstants.accentColor,
+                      tooltip: 'Ver detalles de promoción',
+                    ),
+                  )
+                : const SizedBox(),
+          ),
         ],
       ),
     );
+  }
+
+  void _viewPromotionDetails(SaleItemDetail item) async {
+    if (_saleWithDetails == null) return;
+    
+    // Buscar la promoción específica en los detalles de venta
+    final promotionDetail = _saleWithDetails!.salePromotionDetails.firstWhere(
+      (detail) => detail.promotion?.name == item.itemName,
+      orElse: () => throw Exception('Promoción no encontrada'),
+    );
+    
+    if (promotionDetail.promotion != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PromotionDetailScreen(
+            promotion: promotionDetail.promotion!,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudieron cargar los detalles de la promoción'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
   }
 
   Widget _buildDetailRow(String label, String value, {bool isTotal = false}) {
