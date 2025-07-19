@@ -7,7 +7,6 @@ import '../../models/payment_type.dart';
 import '../../utils/constants.dart';
 import '../../utils/app_utils.dart';
 import '../../widgets/common_widgets.dart';
-import '../dashboard_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -81,9 +80,9 @@ class _CartScreenState extends State<CartScreen> {
           'Venta procesada exitosamente',
         );
         
-        // Navigate back to dashboard and clear the stack
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        // Navigate back to main navigation and clear the stack
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/',
           (route) => false,
         );
       } else {

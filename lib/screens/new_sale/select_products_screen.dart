@@ -98,54 +98,6 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nueva Venta - Seleccionar Productos'),
-        actions: [
-          Consumer<SaleProvider>(
-            builder: (context, saleProvider, child) {
-              return Stack(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    onPressed: saleProvider.cart.isEmpty ? null : _goToCart,
-                  ),
-                  if (saleProvider.cart.itemCount > 0)
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: AppConstants.errorColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 14,
-                          minHeight: 14,
-                        ),
-                        child: Text(
-                          '${saleProvider.cart.itemCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Productos', icon: Icon(Icons.inventory_2)),
-            Tab(text: 'Promociones', icon: Icon(Icons.local_offer)),
-          ],
-        ),
-      ),
       body: Consumer<DataProvider>(
         builder: (context, dataProvider, child) {
           if (dataProvider.isLoading) {
@@ -168,31 +120,92 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> with Ticker
               // Progress indicator
               _buildProgressIndicator(),
               
+              // Tabs
+              Container(
+                color: Theme.of(context).primaryColor,
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorColor: Colors.white,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white70,
+                  tabs: const [
+                    Tab(text: 'Productos', icon: Icon(Icons.inventory_2)),
+                    Tab(text: 'Promociones', icon: Icon(Icons.local_offer)),
+                  ],
+                ),
+              ),
+              
               // Search bar
               Padding(
                 padding: const EdgeInsets.all(AppConstants.spacingM),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar productos o promociones...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                            },
-                          )
-                        : null,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Buscar productos o promociones...',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() {
+                                      _searchQuery = '';
+                                    });
+                                  },
+                                )
+                              : null,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Consumer<SaleProvider>(
+                      builder: (context, saleProvider, child) {
+                        return Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.shopping_cart),
+                              onPressed: saleProvider.cart.isEmpty ? null : _goToCart,
+                            ),
+                            if (saleProvider.cart.itemCount > 0)
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: AppConstants.errorColor,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 14,
+                                    minHeight: 14,
+                                  ),
+                                  child: Text(
+                                    '${saleProvider.cart.itemCount}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
 

@@ -44,35 +44,56 @@ class _SelectTableScreenState extends State<SelectTableScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nueva Venta - Seleccionar Mesa'),
-      ),
-      body: Consumer<DataProvider>(
-        builder: (context, dataProvider, child) {
-          if (dataProvider.isLoading) {
-            return const LoadingWidget(message: 'Cargando mesas...');
-          }
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, child) {
+        if (dataProvider.isLoading) {
+          return const LoadingWidget(message: 'Cargando mesas...');
+        }
 
-          if (dataProvider.errorMessage != null) {
-            return AppErrorWidget(
-              message: dataProvider.errorMessage!,
-              onRetry: () => dataProvider.loadTables(),
-            );
-          }
+        if (dataProvider.errorMessage != null) {
+          return AppErrorWidget(
+            message: dataProvider.errorMessage!,
+            onRetry: () => dataProvider.loadTables(),
+          );
+        }
 
-          if (dataProvider.tables.isEmpty) {
-            return const EmptyStateWidget(
-              title: 'No hay mesas disponibles',
-              subtitle: 'Configure las mesas del establecimiento',
-              icon: Icons.table_restaurant_outlined,
-            );
-          }
+        if (dataProvider.tables.isEmpty) {
+          return const EmptyStateWidget(
+            title: 'No hay mesas disponibles',
+            subtitle: 'Configure las mesas del establecimiento',
+            icon: Icons.table_restaurant_outlined,
+          );
+        }
 
-          final floors = dataProvider.floors;
+        final floors = dataProvider.floors;
 
-          return Column(
+        return Scaffold(
+          body: Column(
             children: [
+              // Header with back button
+              Container(
+                padding: const EdgeInsets.all(AppConstants.spacingM),
+                color: Theme.of(context).primaryColor,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Seleccionar Mesa',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
               // Progress indicator
               _buildProgressIndicator(),
               
@@ -127,17 +148,28 @@ class _SelectTableScreenState extends State<SelectTableScreen> {
                   ),
                 ),
               ],
+              
+              // Bottom action
+              Container(
+                padding: const EdgeInsets.all(AppConstants.spacingM),
+                child: ElevatedButton(
+                  onPressed: _selectedTable != null ? _continueToProducts : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.primaryColor,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  child: Text(
+                    _selectedTable != null 
+                        ? 'Continuar a Productos'
+                        : 'Selecciona una mesa',
+                  ),
+                ),
+              ),
             ],
-          );
-        },
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(AppConstants.spacingM),
-        child: ElevatedButton(
-          onPressed: _selectedTable != null ? _continueToProducts : null,
-          child: const Text('Continuar'),
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
