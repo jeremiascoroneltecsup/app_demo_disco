@@ -5,12 +5,6 @@ import '../providers/data_provider.dart';
 import '../utils/constants.dart';
 import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
-import 'login_screen.dart';
-import 'products_screen.dart';
-import 'sales_screen.dart';
-import 'promotions_screen.dart';
-import 'new_sale/select_table_screen.dart';
-import 'settings_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -28,87 +22,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  void _logout() async {
-    final confirmed = await AppUtils.showConfirmDialog(
-      context,
-      title: 'Cerrar Sesión',
-      message: '¿Está seguro que desea cerrar sesión?',
-      confirmText: 'Sí, cerrar sesión',
-      cancelText: 'Cancelar',
-    );
-
-    if (confirmed && mounted) {
-      await context.read<AuthProvider>().logout();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppConstants.appName),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<DataProvider>().loadAllData(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
-      ),
-      body: Consumer2<AuthProvider, DataProvider>(
-        builder: (context, authProvider, dataProvider, child) {
-          if (dataProvider.isLoading) {
-            return const LoadingWidget(
-              message: 'Cargando datos...',
-            );
-          }
-
-          if (dataProvider.errorMessage != null) {
-            return AppErrorWidget(
-              message: dataProvider.errorMessage!,
-              onRetry: () => dataProvider.loadAllData(),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => dataProvider.loadAllData(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(AppConstants.spacingM),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Welcome section
-                  _buildWelcomeSection(authProvider.currentUser?.name ?? 'Usuario'),
-                  const SizedBox(height: AppConstants.spacingL),
-                  
-                  // Statistics section
-                  _buildStatisticsSection(dataProvider),
-                  const SizedBox(height: AppConstants.spacingL),
-                  
-                  // Quick actions section
-                  _buildQuickActionsSection(),
-                ],
-              ),
-            ),
+    return Consumer2<AuthProvider, DataProvider>(
+      builder: (context, authProvider, dataProvider, child) {
+        if (dataProvider.isLoading) {
+          return const LoadingWidget(
+            message: 'Cargando datos...',
           );
-        },
-      ),
+        }
+
+        if (dataProvider.errorMessage != null) {
+          return AppErrorWidget(
+            message: dataProvider.errorMessage!,
+            onRetry: () => dataProvider.loadAllData(),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => dataProvider.loadAllData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(AppConstants.spacingM),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome section
+                _buildWelcomeSection(authProvider.currentUser?.name ?? 'Usuario'),
+                const SizedBox(height: AppConstants.spacingL),
+                
+                // Statistics section
+                _buildStatisticsSection(dataProvider),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -247,110 +196,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildQuickActionsSection() {
-    return Column(
-      children: [
-        const SectionHeader(
-          title: 'Acciones Rápidas',
-          subtitle: 'Navegación principal',
-        ),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: AppConstants.spacingM,
-          mainAxisSpacing: AppConstants.spacingM,
-          children: [
-            _buildActionCard(
-              title: 'Nueva Venta',
-              subtitle: 'Crear nueva orden',
-              icon: Icons.add_shopping_cart,
-              color: AppConstants.successColor,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SelectTableScreen(),
-                ),
-              ),
-            ),
-            _buildActionCard(
-              title: 'Productos',
-              subtitle: 'Ver inventario',
-              icon: Icons.inventory_2,
-              color: AppConstants.secondaryColor,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ProductsScreen(),
-                ),
-              ),
-            ),
-            _buildActionCard(
-              title: 'Ventas',
-              subtitle: 'Historial de ventas',
-              icon: Icons.receipt_long,
-              color: AppConstants.accentColor,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SalesScreen(),
-                ),
-              ),
-            ),
-            _buildActionCard(
-              title: 'Promociones',
-              subtitle: 'Ofertas especiales',
-              icon: Icons.local_offer,
-              color: AppConstants.warningColor,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const PromotionsScreen(),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return AppCard(
-      onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppConstants.spacingM),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppConstants.borderRadiusL),
-            ),
-            child: Icon(
-              icon,
-              size: 32,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: AppConstants.spacingM),
-          Text(
-            title,
-            style: AppConstants.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppConstants.spacingXS),
-          Text(
-            subtitle,
-            style: AppConstants.bodyMedium.copyWith(
-              color: AppConstants.primaryColor.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 }

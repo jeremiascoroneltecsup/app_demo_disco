@@ -34,52 +34,41 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Promociones'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<DataProvider>().loadPromotions(),
-          ),
-        ],
-      ),
-      body: Consumer<DataProvider>(
-        builder: (context, dataProvider, child) {
-          if (dataProvider.isLoading) {
-            return const LoadingWidget(message: 'Cargando promociones...');
-          }
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, child) {
+        if (dataProvider.isLoading) {
+          return const LoadingWidget(message: 'Cargando promociones...');
+        }
 
-          if (dataProvider.errorMessage != null) {
-            return AppErrorWidget(
-              message: dataProvider.errorMessage!,
-              onRetry: () => dataProvider.loadPromotions(),
-            );
-          }
-
-          final activePromotions = dataProvider.activePromotions;
-
-          if (activePromotions.isEmpty) {
-            return const EmptyStateWidget(
-              title: 'No hay promociones activas',
-              subtitle: 'Las promociones aparecerán aquí cuando estén disponibles',
-              icon: Icons.local_offer_outlined,
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => dataProvider.loadPromotions(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(AppConstants.spacingM),
-              itemCount: activePromotions.length,
-              itemBuilder: (context, index) {
-                final promotion = activePromotions[index];
-                return _buildPromotionCard(promotion);
-              },
-            ),
+        if (dataProvider.errorMessage != null) {
+          return AppErrorWidget(
+            message: dataProvider.errorMessage!,
+            onRetry: () => dataProvider.loadPromotions(),
           );
-        },
-      ),
+        }
+
+        final activePromotions = dataProvider.activePromotions;
+
+        if (activePromotions.isEmpty) {
+          return const EmptyStateWidget(
+            title: 'No hay promociones activas',
+            subtitle: 'Las promociones aparecerán aquí cuando estén disponibles',
+            icon: Icons.local_offer_outlined,
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => dataProvider.loadPromotions(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(AppConstants.spacingM),
+            itemCount: activePromotions.length,
+            itemBuilder: (context, index) {
+              final promotion = activePromotions[index];
+              return _buildPromotionCard(promotion);
+            },
+          ),
+        );
+      },
     );
   }
 

@@ -67,36 +67,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Productos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<DataProvider>().loadProducts();
-              context.read<DataProvider>().loadCategories();
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, child) {
+        if (dataProvider.isLoading) {
+          return const LoadingWidget(message: 'Cargando productos...');
+        }
+
+        if (dataProvider.errorMessage != null) {
+          return AppErrorWidget(
+            message: dataProvider.errorMessage!,
+            onRetry: () {
+              dataProvider.loadProducts();
+              dataProvider.loadCategories();
             },
-          ),
-        ],
-      ),
-      body: Consumer<DataProvider>(
-        builder: (context, dataProvider, child) {
-          if (dataProvider.isLoading) {
-            return const LoadingWidget(message: 'Cargando productos...');
-          }
+          );
+        }
 
-          if (dataProvider.errorMessage != null) {
-            return AppErrorWidget(
-              message: dataProvider.errorMessage!,
-              onRetry: () {
-                dataProvider.loadProducts();
-                dataProvider.loadCategories();
-              },
-            );
-          }
-
-          final filteredProducts = _getFilteredProducts(dataProvider);
+        final filteredProducts = _getFilteredProducts(dataProvider);
 
           return Column(
             children: [
@@ -210,9 +197,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ],
           );
         },
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildProductCard(Product product, List<Category> categories) {
     final stock = product.stock ?? 0;

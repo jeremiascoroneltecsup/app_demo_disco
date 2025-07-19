@@ -4,7 +4,7 @@ import 'providers/auth_provider.dart';
 import 'providers/data_provider.dart';
 import 'providers/sale_provider.dart';
 import 'screens/login_screen.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/main_navigation_screen.dart';
 import 'utils/constants.dart';
 
 void main() {
@@ -48,7 +48,7 @@ class AuthWrapper extends StatelessWidget {
               ),
             );
           case AuthState.authenticated:
-            return const DashboardScreen();
+            return const MainNavigationScreen();
           case AuthState.unauthenticated:
           case AuthState.error:
             return const LoginScreen();
