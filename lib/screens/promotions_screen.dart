@@ -267,7 +267,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                 ),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  minimumSize: Size(0, 32),
+                  minimumSize: Size(0, 30),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
