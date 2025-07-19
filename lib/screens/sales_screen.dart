@@ -5,6 +5,7 @@ import '../models/sale.dart';
 import '../utils/constants.dart';
 import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
+import 'sale_detail_screen.dart';
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
@@ -50,151 +51,220 @@ class _SalesScreenState extends State<SalesScreen> {
 
         return RefreshIndicator(
           onRefresh: () => dataProvider.loadSales(),
-          child: ListView.builder(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppConstants.spacingM),
-            itemCount: dataProvider.sales.length,
-            itemBuilder: (context, index) {
-              final sale = dataProvider.sales[index];
-              return _buildSaleCard(sale);
-            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Table Header
+                Text(
+                  'Registro de Ventas (${dataProvider.sales.length})',
+                  style: AppConstants.titleLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: AppConstants.spacingM),
+                
+                // Sales Table
+                AppCard(
+                  child: Column(
+                    children: [
+                      // Table Header
+                      Container(
+                        padding: const EdgeInsets.all(AppConstants.spacingM),
+                        decoration: BoxDecoration(
+                          color: AppConstants.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(AppConstants.borderRadiusM),
+                            topRight: Radius.circular(AppConstants.borderRadiusM),
+                          ),
+                        ),
+                        child: const Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'ID',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'Fecha',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'Mesero',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Mesa',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'Total',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                'Acción',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Table Body
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: dataProvider.sales.length,
+                        separatorBuilder: (context, index) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final sale = dataProvider.sales[index];
+                          return _buildSaleRow(sale, index);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildSaleCard(Sale sale) {
+  Widget _buildSaleRow(Sale sale, int index) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingM),
-      child: AppCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with sale ID and date
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(AppConstants.spacingM),
+      color: index % 2 == 0 ? Colors.transparent : Colors.grey.withOpacity(0.05),
+      child: Row(
+        children: [
+          // ID
+          Expanded(
+            flex: 1,
+            child: Text(
+              '#${sale.id}',
+              style: AppConstants.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          
+          // Fecha
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Venta #${sale.id}',
-                  style: AppConstants.titleMedium,
+                  AppUtils.formatDate(sale.saleDate),
+                  style: AppConstants.bodyMedium,
                 ),
                 Text(
-                  AppUtils.formatDateTime(sale.saleDate),
+                  AppUtils.formatTime(sale.saleDate),
                   style: AppConstants.bodyMedium.copyWith(
                     color: AppConstants.primaryColor.withOpacity(0.7),
+                    fontSize: 12,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: AppConstants.spacingM),
-            
-            // Sale details
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSaleDetailItem(
-                    'Mesero',
-                    sale.user?.name ?? 'No disponible',
-                    Icons.person,
-                  ),
-                ),
-                Expanded(
-                  child: _buildSaleDetailItem(
-                    'Mesa',
-                    sale.table != null 
-                        ? 'Mesa ${sale.table!.tableNumber} - Piso ${sale.table!.floorNumber}'
-                        : 'No disponible',
-                    Icons.table_restaurant,
-                  ),
-                ),
-              ],
+          ),
+          
+          // Mesero
+          Expanded(
+            flex: 2,
+            child: Text(
+              sale.user?.name ?? 'N/A',
+              style: AppConstants.bodyMedium,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppConstants.spacingM),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSaleDetailItem(
-                    'Pago',
-                    sale.paymentType?.name ?? 'No disponible',
-                    Icons.payment,
-                  ),
-                ),
-                Expanded(
-                  child: _buildSaleDetailItem(
-                    'Propina',
-                    AppUtils.formatCurrency(sale.tip),
-                    Icons.volunteer_activism,
-                  ),
-                ),
-              ],
+          ),
+          
+          // Mesa
+          Expanded(
+            flex: 1,
+            child: Text(
+              sale.table != null ? '${sale.table!.tableNumber}' : 'N/A',
+              style: AppConstants.bodyMedium,
+              textAlign: TextAlign.center,
             ),
-            
-            const Divider(height: AppConstants.spacingL),
-            
-            // Financial summary
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Subtotal: ${AppUtils.formatCurrency(sale.subtotal)}',
-                      style: AppConstants.bodyMedium,
-                    ),
-                    Text(
-                      'Propina: ${AppUtils.formatCurrency(sale.tip)}',
-                      style: AppConstants.bodyMedium,
-                    ),
-                  ],
-                ),
-                Text(
-                  'Total: ${AppUtils.formatCurrency(sale.total)}',
-                  style: AppConstants.titleMedium.copyWith(
-                    color: AppConstants.successColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+          ),
+          
+          // Total
+          Expanded(
+            flex: 2,
+            child: Text(
+              AppUtils.formatCurrency(sale.total),
+              style: AppConstants.bodyMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppConstants.successColor,
+              ),
+              textAlign: TextAlign.right,
             ),
-          ],
-        ),
+          ),
+          
+          // Botón Ver detalles
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: IconButton(
+                onPressed: () => _viewSaleDetails(sale),
+                icon: const Icon(Icons.visibility),
+                iconSize: 20,
+                color: AppConstants.primaryColor,
+                tooltip: 'Ver detalles',
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSaleDetailItem(String label, String value, IconData icon) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: AppConstants.primaryColor.withOpacity(0.7),
-        ),
-        const SizedBox(width: AppConstants.spacingXS),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: AppConstants.bodyMedium.copyWith(
-                  color: AppConstants.primaryColor.withOpacity(0.7),
-                ),
-              ),
-              Text(
-                value,
-                style: AppConstants.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ],
+  void _viewSaleDetails(Sale sale) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SaleDetailScreen(sale: sale),
+      ),
     );
   }
 }

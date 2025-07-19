@@ -8,6 +8,7 @@ import '../models/promotion.dart';
 import '../models/payment_type.dart';
 import '../models/table.dart';
 import '../models/sale.dart';
+import '../models/sale_with_details.dart';
 import '../models/category.dart';
 import '../utils/api_config.dart';
 
@@ -278,6 +279,27 @@ class ApiService {
     } catch (e) {
       print('Error getting sales: $e');
       return [];
+    }
+  }
+
+  // Get sale with details (products and promotions)
+  Future<SaleWithDetails?> getSaleWithDetails(int saleId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesEndpoint}/$saleId'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true && data['data'] != null) {
+          return SaleWithDetails.fromJson(data['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting sale details: $e');
+      return null;
     }
   }
 

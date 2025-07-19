@@ -5,6 +5,7 @@ import '../models/promotion.dart';
 import '../models/payment_type.dart';
 import '../models/table.dart';
 import '../models/sale.dart';
+import '../models/sale_with_details.dart';
 import '../services/api_service.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -161,6 +162,15 @@ class DataProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error loading sales: $e');
+    }
+  }
+
+  Future<SaleWithDetails?> getSaleWithDetails(int saleId) async {
+    try {
+      return await _apiService.getSaleWithDetails(saleId);
+    } catch (e) {
+      print('Error loading sale details: $e');
+      return null;
     }
   }
 
