@@ -94,16 +94,23 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 20), // Reducido de 24 a 20
-              _buildMetricsGrid(),
-              const SizedBox(height: 20), // Reducido de 24 a 20
-              _buildRecentSales(),
-            ],
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800), // Ancho máximo para web
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 20),
+                    _buildMetricsGrid(),
+                    const SizedBox(height: 20),
+                    _buildRecentSales(),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -118,7 +125,7 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
         final greeting = _getGreeting(now.hour);
         
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16), // Reducido de 20 a 16
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor.withOpacity(0.8)],
@@ -246,13 +253,18 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         
+        // Calcular número de columnas basado en el ancho de pantalla
+        final screenWidth = MediaQuery.of(context).size.width;
+        final crossAxisCount = screenWidth > 600 ? 4 : 2; // 4 columnas en web/tablet, 2 en móvil
+        final aspectRatio = screenWidth > 600 ? 1.8 : 2.0; // Ajustar proporción según pantalla
+        
         return GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          crossAxisSpacing: 12, // Reducido de 16 a 12
-          mainAxisSpacing: 12,  // Reducido de 16 a 12
-          childAspectRatio: 2.0, // Aumentado de 1.5 a 2.0 para hacer los cuadros más anchos y menos altos
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: aspectRatio,
           children: [
             _buildMetricCard(
               'Ventas Hoy',
@@ -296,7 +308,7 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12), // Reducido de 16 a 12 para hacer los cuadros más compactos
+        padding: const EdgeInsets.all(10), // Reducido de 12 a 10 para hacer los cuadros aún más compactos
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -315,12 +327,12 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6), // Reducido de 8 a 6
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6), // Reducido de 8 a 6
                   ),
-                  child: Icon(icon, color: color, size: 18), // Reducido de 20 a 18
+                  child: Icon(icon, color: color, size: 16), // Reducido de 18 a 16
                 ),
                 if (onTap != null)
                   Icon(
@@ -334,7 +346,7 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
             Text(
               value,
               style: const TextStyle(
-                fontSize: 18, // Reducido de 20 a 18
+                fontSize: 16, // Reducido de 18 a 16
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
@@ -343,7 +355,7 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 11, // Reducido de 12 a 11
+                fontSize: 10, // Reducido de 11 a 10
                 color: Colors.grey[600],
               ),
             ),
