@@ -9,7 +9,12 @@ import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
 
 class DashboardV2Screen extends StatefulWidget {
-  const DashboardV2Screen({super.key});
+  final VoidCallback? onNavigateToSales;
+  
+  const DashboardV2Screen({
+    super.key,
+    this.onNavigateToSales,
+  });
 
   @override
   State<DashboardV2Screen> createState() => _DashboardV2ScreenState();
@@ -119,6 +124,20 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
   void _onSaleCompleted() {
     // Actualizar inmediatamente después de completar una venta
     _refreshData();
+  }
+  
+  void _handleLogout() async {
+    final confirmed = await AppUtils.showConfirmDialog(
+      context,
+      title: 'Cerrar Sesión',
+      message: '¿Está seguro que desea cerrar sesión?',
+      confirmText: 'Sí, cerrar sesión',
+      cancelText: 'Cancelar',
+    );
+
+    if (confirmed && mounted) {
+      await context.read<AuthProvider>().logout();
+    }
   }
 
   @override
@@ -230,6 +249,13 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
           icon: const Icon(Icons.refresh),
           tooltip: 'Actualizar',
           color: AppConstants.primaryColor,
+        ),
+        const SizedBox(width: 8),
+        IconButton(
+          onPressed: _handleLogout,
+          icon: const Icon(Icons.logout),
+          tooltip: 'Cerrar Sesión',
+          color: Colors.red,
         ),
       ],
     );
@@ -482,7 +508,13 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             ),
             const SizedBox(height: 20),
             InkWell(
-              onTap: () => Navigator.of(context).pushNamed('/sales'),
+              onTap: () {
+                if (widget.onNavigateToSales != null) {
+                  widget.onNavigateToSales!();
+                } else {
+                  Navigator.of(context).pushNamed('/sales');
+                }
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(

@@ -16,8 +16,14 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const DashboardV2Screen(),
+  void _navigateToSales() {
+    setState(() {
+      _currentIndex = 2; // Índice de la pestaña de ventas
+    });
+  }
+
+  List<Widget> get _screens => [
+    DashboardV2Screen(onNavigateToSales: _navigateToSales),
     const ProductsScreen(),
     const SalesScreen(),
     const PromotionsScreen(),
