@@ -7,7 +7,6 @@ import '../providers/sale_provider.dart';
 import '../utils/constants.dart';
 import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
-import 'new_sale/select_table_screen.dart';
 
 class DashboardV2Screen extends StatefulWidget {
   const DashboardV2Screen({super.key});
@@ -162,10 +161,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
                   
                   // Gráfico/Indicador de rendimiento
                   _buildPerformanceIndicator(dataProvider),
-                  
-                  // Footer con botones de acción rápida
-                  const SizedBox(height: 24),
-                  _buildQuickActions(),
                 ],
               ),
             ),
@@ -254,7 +249,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             value: AppUtils.formatCurrency(dataProvider.todayTotalSales),
             icon: Icons.attach_money,
             color: AppConstants.successColor,
-            route: '/sales',
             showChangeIndicator: _showChangeAnimation && isSalesIncreased,
             changeValue: isSalesIncreased 
                 ? '+${AppUtils.formatCurrency(dataProvider.todayTotalSales - _previousTotalSales)}'
@@ -269,7 +263,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             value: '${dataProvider.todayOrdersCount}',
             icon: Icons.receipt_long,
             color: AppConstants.secondaryColor,
-            route: '/sales',
             showChangeIndicator: _showChangeAnimation && isOrdersIncreased,
             changeValue: isOrdersIncreased 
                 ? '+${dataProvider.todayOrdersCount - _previousOrderCount}'
@@ -291,7 +284,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             subtitle: 'Activas',
             icon: Icons.local_offer,
             color: AppConstants.warningColor,
-            route: '/promotions',
           ),
         ),
         const SizedBox(width: 16),
@@ -303,7 +295,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             subtitle: 'En stock',
             icon: Icons.inventory_2,
             color: AppConstants.accentColor,
-            route: '/products',
           ),
         ),
       ],
@@ -316,96 +307,91 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
     String? subtitle,
     required IconData icon,
     required Color color,
-    String? route,
     bool showChangeIndicator = false,
     String? changeValue,
   }) {
-    return GestureDetector(
-      onTap: route != null ? () => Navigator.of(context).pushNamed(route) : null,
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: color.withOpacity(0.3), width: 1),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(icon, color: color, size: 28),
-                  if (route != null)
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.arrow_forward_ios, size: 12, color: color),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(icon, color: color, size: 28),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
-                  if (showChangeIndicator && changeValue != null)
-                    Positioned(
-                      right: -8,
-                      top: -20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.arrow_upward, color: Colors.green.shade800, size: 12),
-                            Text(
-                              changeValue,
-                              style: TextStyle(
-                                color: Colors.green.shade800,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade700,
+                  child: Icon(Icons.analytics, size: 12, color: color),
                 ),
-              ),
-              if (subtitle != null)
+              ],
+            ),
+            const SizedBox(height: 20),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
                 Text(
-                  subtitle,
+                  value,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: color,
                   ),
                 ),
-            ],
-          ),
+                if (showChangeIndicator && changeValue != null)
+                  Positioned(
+                    right: -8,
+                    top: -20,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.arrow_upward, color: Colors.green.shade800, size: 12),
+                          Text(
+                            changeValue,
+                            style: TextStyle(
+                              color: Colors.green.shade800,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            if (subtitle != null)
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -516,77 +502,6 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
             ),
           ],
         ),
-      ),
-    );
-  }
-  
-  Widget _buildQuickActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildActionButton(
-          icon: Icons.add_shopping_cart,
-          label: 'Nueva Venta',
-          color: Colors.green,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const SelectTableScreen(),
-              ),
-            );
-          },
-        ),
-        _buildActionButton(
-          icon: Icons.inventory_2,
-          label: 'Productos',
-          color: AppConstants.accentColor,
-          onTap: () => Navigator.of(context).pushNamed('/products'),
-        ),
-        _buildActionButton(
-          icon: Icons.local_offer,
-          label: 'Promos',
-          color: AppConstants.warningColor,
-          onTap: () => Navigator.of(context).pushNamed('/promotions'),
-        ),
-        _buildActionButton(
-          icon: Icons.settings,
-          label: 'Config',
-          color: Colors.grey.shade700,
-          onTap: () => Navigator.of(context).pushNamed('/settings'),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
       ),
     );
   }
