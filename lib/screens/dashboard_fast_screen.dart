@@ -271,14 +271,12 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
               AppUtils.formatCurrency(dataProvider.todayTotalSales),
               Icons.trending_up,
               Colors.green,
-              onTap: widget.onNavigateToSales,
             ),
             _buildMetricCard(
               'Órdenes Hoy',
               '${dataProvider.todayOrdersCount}',
               Icons.receipt_long,
               Colors.blue,
-              onTap: widget.onNavigateToSales,
             ),
             _buildMetricCard(
               'Productos',
