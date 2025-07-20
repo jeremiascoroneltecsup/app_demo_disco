@@ -99,11 +99,11 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20), // Reducido de 24 a 20
               _buildMetricsGrid(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20), // Reducido de 24 a 20
               _buildQuickActions(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20), // Reducido de 24 a 20
               _buildRecentSales(),
             ],
           ),
@@ -162,36 +162,77 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
                   ],
                 ),
               ),
-              // Indicador de estado (sin WebSocket)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.green, width: 1),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
+              // Botón de cerrar sesión
+              Column(
+                children: [
+                  // Indicador de estado (sin WebSocket)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.green, width: 1),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Online',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Botón de cerrar sesión
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => _handleLogout(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.logout_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Salir',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Online',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -211,9 +252,9 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.5,
+          crossAxisSpacing: 12, // Reducido de 16 a 12
+          mainAxisSpacing: 12,  // Reducido de 16 a 12
+          childAspectRatio: 2.0, // Aumentado de 1.5 a 2.0 para hacer los cuadros más anchos y menos altos
           children: [
             _buildMetricCard(
               'Ventas Hoy',
@@ -257,7 +298,7 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12), // Reducido de 16 a 12 para hacer los cuadros más compactos
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -281,12 +322,12 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: color, size: 20),
+                  child: Icon(icon, color: color, size: 18), // Reducido de 20 a 18
                 ),
                 if (onTap != null)
                   Icon(
                     Icons.arrow_forward_ios,
-                    size: 14,
+                    size: 12, // Reducido de 14 a 12
                     color: Colors.grey[400],
                   ),
               ],
@@ -295,16 +336,16 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
             Text(
               value,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 18, // Reducido de 20 a 18
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2), // Reducido de 4 a 2
             Text(
               title,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11, // Reducido de 12 a 11
                 color: Colors.grey[600],
               ),
             ),
@@ -495,6 +536,28 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
         );
       },
     );
+  }
+
+  Future<void> _handleLogout() async {
+    final confirmed = await AppUtils.showConfirmDialog(
+      context,
+      title: 'Cerrar Sesión',
+      message: '¿Estás seguro de que quieres cerrar sesión?',
+      confirmText: 'Cerrar Sesión',
+      cancelText: 'Cancelar',
+    );
+
+    if (confirmed && mounted) {
+      try {
+        await context.read<AuthProvider>().logout();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al cerrar sesión: $e')),
+          );
+        }
+      }
+    }
   }
 
   String _getGreeting(int hour) {
