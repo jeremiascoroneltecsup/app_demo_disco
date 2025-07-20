@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dashboard_v2_screen.dart';
+import 'dashboard_fast_screen.dart';
 import 'products_screen.dart';
 import 'sales_screen.dart';
 import 'promotions_screen.dart';
@@ -23,7 +23,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   List<Widget> get _screens => [
-    DashboardV2Screen(onNavigateToSales: _navigateToSales),
+    DashboardFastScreen(onNavigateToSales: _navigateToSales),
     const ProductsScreen(),
     const SalesScreen(),
     const PromotionsScreen(),

@@ -10,8 +10,11 @@ import 'screens/sales_screen.dart';
 import 'screens/promotions_screen.dart';
 import 'screens/settings_screen.dart';
 import 'utils/constants.dart';
+import 'services/websocket_service.dart'; // Importar para deshabilitarlo
 
 void main() {
+  // Deshabilitar WebSocket por defecto para mejorar rendimiento
+  WebSocketService().setEnabled(false);
   runApp(const MainApp());
 }
 

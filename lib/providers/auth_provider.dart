@@ -62,6 +62,7 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = response.user;
         _state = AuthState.authenticated;
         notifyListeners();
+        
         return true;
       } else {
         _errorMessage = response.error ?? 'Credenciales incorrectas';

@@ -50,7 +50,7 @@ class ApiService {
         uri,
         headers: _headers,
         body: body,
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 10)); // Reducido de 30 a 10 segundos
 
       print('DEBUG: Status Code: ${response.statusCode}');
       print('DEBUG: Response Body: ${response.body}');
@@ -106,7 +106,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.currentUserEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -127,7 +127,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.usersEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -149,7 +149,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categoriesEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -171,7 +171,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.productsEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -193,7 +193,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.promotionsEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -222,7 +222,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.paymentTypesEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -244,7 +244,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.tablesEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -266,7 +266,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesEndpoint}'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -288,7 +288,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.promotionsEndpoint}/$promotionId'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -309,7 +309,7 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesEndpoint}/$saleId'),
         headers: _headers,
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -331,7 +331,7 @@ class ApiService {
         Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesEndpoint}'),
         headers: _headers,
         body: jsonEncode(saleRequest.toJson()),
-      );
+      ).timeout(const Duration(seconds: 12)); // Un poco más de tiempo para crear venta
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);

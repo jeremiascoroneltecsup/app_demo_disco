@@ -2,14 +2,15 @@ class ApiConfig {
   // URL del API de producción
   static const String baseUrl = 'https://api-demo-43yz.onrender.com/api';
   
-  // Configuraciones adicionales
-  static const int connectionTimeout = 30000; // 30 segundos
-  static const int receiveTimeout = 30000; // 30 segundos
+  // Configuraciones optimizadas para mejor rendimiento
+  static const int connectionTimeout = 10000; // Reducido a 10 segundos
+  static const int receiveTimeout = 10000; // Reducido a 10 segundos
   
   // Headers por defecto
   static const Map<String, String> defaultHeaders = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Connection': 'close', // Cerrar conexiones para liberar recursos
   };
   
   // Endpoints

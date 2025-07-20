@@ -55,8 +55,8 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
   }
   
   void _startRefreshTimer() {
-    // Actualizar cada 3 minutos
-    _refreshTimer = Timer.periodic(const Duration(minutes: 3), (_) {
+    // Timer optimizado cada 5 minutos para reducir carga
+    _refreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       if (mounted) {
         _refreshData();
       }
@@ -65,9 +65,12 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
   
   void _refreshData() {
     if (mounted) {
-      context.read<DataProvider>().loadSales();
-      context.read<DataProvider>().loadProducts();
-      context.read<DataProvider>().loadPromotions();
+      // Solo recargar datos críticos para mejorar rendimiento
+      final dataProvider = context.read<DataProvider>();
+      Future.wait([
+        dataProvider.loadSales(),
+        dataProvider.loadProducts(),
+      ]);
     }
   }
 

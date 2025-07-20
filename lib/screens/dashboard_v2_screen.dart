@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/data_provider.dart';
 import '../providers/sale_provider.dart';
+import '../providers/websocket_provider.dart';
 import '../utils/constants.dart';
 import '../utils/app_utils.dart';
 import '../widgets/common_widgets.dart';
@@ -79,8 +80,9 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
   }
   
   void _startRefreshTimer() {
-    // Actualizar cada minuto
-    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+    // Timer de backup cada 5 minutos para reducir carga del servidor
+    // Sin depender del WebSocket para mejorar rendimiento  
+    _refreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       if (mounted) {
         _refreshData();
       }
@@ -96,10 +98,11 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
     final previousSales = dataProvider.todayTotalSales;
     final previousOrders = dataProvider.todayOrdersCount;
     
-    // Recargar solo los datos necesarios
-    await dataProvider.loadSales();
-    await dataProvider.loadProducts();
-    await dataProvider.loadPromotions();
+    // Recargar solo ventas y productos (los datos que cambian más frecuentemente)
+    await Future.wait([
+      dataProvider.loadSales(),
+      dataProvider.loadProducts(),
+    ]);
     
     // Si hubo cambios, actualizar valores previos y mostrar animación
     if (previousSales != dataProvider.todayTotalSales || 
@@ -142,8 +145,8 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, DataProvider>(
-      builder: (context, authProvider, dataProvider, child) {
+    return Consumer3<AuthProvider, DataProvider, WebSocketProvider>(
+      builder: (context, authProvider, dataProvider, wsProvider, child) {
         if (dataProvider.isLoading) {
           return const LoadingWidget(
             message: 'Cargando datos...',
@@ -167,7 +170,12 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header con información del usuario y hora
-                  _buildHeader(authProvider.currentUser?.name ?? 'Usuario', formattedDate, formattedTime),
+                  _buildHeader(
+                    authProvider.currentUser?.name ?? 'Usuario', 
+                    formattedDate, 
+                    formattedTime,
+                    wsProvider.isConnected,
+                  ),
                   const SizedBox(height: 24),
                   
                   // Tarjetas principales (Ventas y Órdenes)
@@ -189,7 +197,7 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
     );
   }
 
-  Widget _buildHeader(String userName, String date, String time) {
+  Widget _buildHeader(String userName, String date, String time, bool isWebSocketConnected) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -237,6 +245,22 @@ class _DashboardV2ScreenState extends State<DashboardV2Screen> with WidgetsBindi
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Indicador de estado WebSocket
+                  Icon(
+                    isWebSocketConnected ? Icons.wifi : Icons.wifi_off,
+                    size: 14,
+                    color: isWebSocketConnected ? Colors.green : Colors.red,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isWebSocketConnected ? 'En vivo' : 'Sin conexión',
+                    style: TextStyle(
+                      color: isWebSocketConnected ? Colors.green : Colors.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],

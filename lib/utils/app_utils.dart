@@ -108,4 +108,13 @@ class AppUtils {
   static double calculateSuggestedTip(double amount, double percentage) {
     return amount * (percentage / 100);
   }
+
+  // Verificar si una fecha es hoy
+  static bool isToday(DateTime? date) {
+    if (date == null) return false;
+    final now = DateTime.now();
+    return date.year == now.year && 
+           date.month == now.month && 
+           date.day == now.day;
+  }
 }

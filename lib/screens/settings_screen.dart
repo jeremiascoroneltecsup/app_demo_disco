@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/api_config.dart';
+import '../services/websocket_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,15 +12,23 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _urlController = TextEditingController();
   bool _isLoading = false;
+  bool _websocketEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _loadApiUrl();
+    _loadWebSocketSettings();
   }
 
   void _loadApiUrl() {
     _urlController.text = ApiConfig.baseUrl;
+  }
+
+  void _loadWebSocketSettings() {
+    setState(() {
+      _websocketEnabled = WebSocketService().isEnabled;
+    });
   }
 
   Future<void> _saveApiUrl() async {
@@ -70,6 +79,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _urlController.text = 'https://api-demo-43yz.onrender.com/api';
   }
 
+  void _toggleWebSocket(bool enabled) {
+    setState(() {
+      _websocketEnabled = enabled;
+    });
+    
+    WebSocketService().setEnabled(enabled);
+    
+    if (enabled) {
+      _showSuccess('WebSocket habilitado - Las actualizaciones en tiempo real están activas');
+      // Intentar conectar
+      WebSocketService().connect();
+    } else {
+      _showSuccess('WebSocket deshabilitado - Mejora el rendimiento pero sin actualizaciones en tiempo real');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -84,17 +109,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _urlController,
-              decoration: const InputDecoration(
-                labelText: 'URL del API',
-                hintText: 'https://api-demo-43yz.onrender.com/api',
-                border: OutlineInputBorder(),
-              ),
-              enabled: !_isLoading,
+          const SizedBox(height: 16),
+          TextField(
+            controller: _urlController,
+            decoration: const InputDecoration(
+              labelText: 'URL del API',
+              hintText: 'https://api-demo-43yz.onrender.com/api',
+              border: OutlineInputBorder(),
             ),
-            const SizedBox(height: 16),
+            enabled: !_isLoading,
+          ),
+          const SizedBox(height: 24),
+          
+          // Configuración de WebSocket
+          const Text(
+            'Configuración de Rendimiento',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        _websocketEnabled ? Icons.wifi : Icons.wifi_off,
+                        color: _websocketEnabled ? Colors.green : Colors.grey,
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Actualizaciones en Tiempo Real (WebSocket)',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      Switch(
+                        value: _websocketEnabled,
+                        onChanged: _toggleWebSocket,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _websocketEnabled 
+                        ? 'Habilitado: Recibes actualizaciones instantáneas, pero puede ser más lento.'
+                        : 'Deshabilitado: Mejor rendimiento, pero necesitas actualizar manualmente.',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(

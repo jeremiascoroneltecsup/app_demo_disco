@@ -7,9 +7,11 @@ import '../models/table.dart';
 import '../models/sale.dart';
 import '../models/sale_with_details.dart';
 import '../services/api_service.dart';
+// import '../services/websocket_service.dart'; // Comentado para mejorar rendimiento
 
 class DataProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
+  // final WebSocketService _webSocketService = WebSocketService(); // Comentado para mejorar rendimiento
 
   List<Product> _products = [];
   List<models.Category> _categories = [];
@@ -20,6 +22,40 @@ class DataProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
+
+  DataProvider() {
+    // _setupWebSocketListeners(); // Comentado para mejorar rendimiento
+  }
+
+  // Setup WebSocket listeners para actualizaciones en tiempo real
+  // COMENTADO PARA MEJORAR RENDIMIENTO - SIN WEBSOCKET
+  /*
+  void _setupWebSocketListeners() {
+    // Escuchar nuevas ventas
+    _webSocketService.onNewSale((event) {
+      print('🔄 Nueva venta detectada via WebSocket');
+      loadSales(); // Recargar ventas
+    });
+
+    // Escuchar actualizaciones de productos
+    _webSocketService.onProductUpdate((event) {
+      print('🔄 Actualización de productos detectada via WebSocket');
+      loadProducts(); // Recargar productos
+    });
+
+    // Escuchar actualizaciones de promociones
+    _webSocketService.onPromotionUpdate((event) {
+      print('🔄 Actualización de promociones detectada via WebSocket');
+      loadPromotions(); // Recargar promociones
+    });
+
+    // Escuchar actualizaciones de mesas
+    _webSocketService.onTableUpdate((event) {
+      print('🔄 Actualización de mesas detectada via WebSocket');
+      loadTables(); // Recargar mesas
+    });
+  }
+  */
 
   // Getters
   List<Product> get products => _products;
@@ -85,27 +121,36 @@ class DataProvider extends ChangeNotifier {
     return totalTips / _sales.length;
   }
 
-  // Load all data
+  // Load all data - optimizado para no bloquear la UI
   Future<void> loadAllData() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      await Future.wait([
-        loadProducts(),
-        loadCategories(),
-        loadPromotions(),
-        loadPaymentTypes(),
-        loadTables(),
-        loadSales(),
-      ]);
+      // Cargar datos críticos primero
+      await loadCategories();
+      await loadPaymentTypes();
+      await loadTables();
+      
+      // Notificar que los datos básicos están listos
+      _isLoading = false;
+      notifyListeners();
+      
+      // Cargar datos secundarios en background
+      Future.microtask(() async {
+        await Future.wait([
+          loadProducts(),
+          loadPromotions(),
+          loadSales(),
+        ]);
+      });
+      
     } catch (e) {
       _errorMessage = 'Error loading data: $e';
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   // Load individual data
