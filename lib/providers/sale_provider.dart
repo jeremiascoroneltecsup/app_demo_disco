@@ -77,6 +77,26 @@ class SaleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Event notifier for successful sale
+  final List<Function()> _onSaleCompletedListeners = [];
+  
+  // Add listener for sale completion
+  void addOnSaleCompletedListener(Function() listener) {
+    _onSaleCompletedListeners.add(listener);
+  }
+  
+  // Remove listener
+  void removeOnSaleCompletedListener(Function() listener) {
+    _onSaleCompletedListeners.remove(listener);
+  }
+  
+  // Notify all listeners of sale completion
+  void _notifySaleCompleted() {
+    for (var listener in _onSaleCompletedListeners) {
+      listener();
+    }
+  }
+
   // Process sale
   Future<bool> processSale() async {
     if (_selectedTable == null || _selectedPaymentType == null || _cart.isEmpty) {
@@ -123,6 +143,9 @@ class SaleProvider extends ChangeNotifier {
         _selectedTable = null;
         _selectedPaymentType = null;
         _tip = 0.0;
+        
+        // Notify listeners that a sale was completed
+        _notifySaleCompleted();
       }
 
       _isProcessing = false;

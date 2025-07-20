@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
+import 'dashboard_v2_screen.dart';
 import 'products_screen.dart';
 import 'sales_screen.dart';
 import 'promotions_screen.dart';
@@ -17,7 +17,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const DashboardScreen(),
+    const DashboardV2Screen(),
     const ProductsScreen(),
     const SalesScreen(),
     const PromotionsScreen(),

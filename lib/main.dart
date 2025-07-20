@@ -5,6 +5,10 @@ import 'providers/data_provider.dart';
 import 'providers/sale_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_screen.dart';
+import 'screens/products_screen.dart';
+import 'screens/sales_screen.dart';
+import 'screens/promotions_screen.dart';
+import 'screens/settings_screen.dart';
 import 'utils/constants.dart';
 
 void main() {
@@ -27,6 +31,14 @@ class MainApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         home: const AuthWrapper(),
+        routes: {
+          '/products': (context) => const ProductsScreen(),
+          '/sales': (context) => const SalesScreen(),
+          '/promotions': (context) => const PromotionsScreen(),
+          '/settings': (context) => const SettingsScreen(),
+          // No usamos la ruta sale_detail directamente porque necesita la instancia de Sale
+          // El dashboard v2 navegará directamente a la pantalla de ventas en su lugar
+        },
       ),
     );
   }
