@@ -102,8 +102,6 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
               const SizedBox(height: 20), // Reducido de 24 a 20
               _buildMetricsGrid(),
               const SizedBox(height: 20), // Reducido de 24 a 20
-              _buildQuickActions(),
-              const SizedBox(height: 20), // Reducido de 24 a 20
               _buildRecentSales(),
             ],
           ),
@@ -347,72 +345,6 @@ class _DashboardFastScreenState extends State<DashboardFastScreen> {
               style: TextStyle(
                 fontSize: 11, // Reducido de 12 a 11
                 color: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Acciones Rápidas',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                'Nueva Venta',
-                Icons.add_shopping_cart,
-                Colors.green,
-                () => widget.onNavigateToSales?.call(),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildActionButton(
-                'Ver Reportes',
-                Icons.analytics,
-                Colors.blue,
-                () => widget.onNavigateToSales?.call(),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(String title, IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ],
