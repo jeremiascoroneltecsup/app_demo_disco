@@ -74,7 +74,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
             builder: (context, constraints) {
               int crossAxisCount = 1;
               if (constraints.maxWidth >= 1200) {
-                crossAxisCount = 4;
+                crossAxisCount = 3;
               } else if (constraints.maxWidth >= 900) {
                 crossAxisCount = 3;
               } else if (constraints.maxWidth >= 600) {
